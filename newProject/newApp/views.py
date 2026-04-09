@@ -1,37 +1,43 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic import ListView, DetailView, View
 from .models import Books, Authors
+from django.http import HttpResponse
 
 # Create your views here.
-class Page(ListView):
+
+class newListView(View):
+
+    model = None
+    template_name = None
+    context_object_name = None
+
+    def get_queryset(self):
+        return self.model.objects.all()
+    
+    
+    def get(self, request, *args, **kwards):
+
+        context = {
+
+            self.context_object_name: self.get_queryset()
+
+        }
+
+        return HttpResponse(render(request, self.template_name, context))
+
+
+class Page(newListView):
     template_name = "index.html"
     model = Books
     context_object_name = "books"
+
+    def get_queryset(self):
+        return self.model.objects.filter(name__startswith='1')
 
 class Author(DetailView):
     template_name = "author.html"
     model = Authors
     context_object_name = "author"
 
-# class Page(ListView):
-#     template_name = "index.html"
-#     model = Books
-#     context_object_name = "books"
 
-#     def get_queryset(self):
-#         return self.model.objects.filter(name__startswith="С")
     
-# class newListView():
-#     template_name = "index.html"
-#     model = Books
-#     context_object_name = "books"
-
-#     allObjects = model.objects.all()
-
-#     context = {
-
-#         context_object_name: allObjects
-
-#     }
-
-#     render(request, 'main-content.html', context)
